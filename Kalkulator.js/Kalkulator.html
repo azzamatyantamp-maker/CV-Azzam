@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kalkulator Glow</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0d0d0d;
+}
+
+/* CONTAINER */
+.container {
+    display: flex;
+    gap: 25px;
+}
+
+/* KALKULATOR */
+.kalkulator {
+    background: #1a1a1a;
+    padding: 20px;
+    border-radius: 20px;
+    width: 300px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.1);
+}
+
+/* DISPLAY */
+#display {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    border: none;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 24px;
+    text-align: right;
+    padding: 10px;
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+/* BUTTON */
+button {
+    height: 60px;
+    border-radius: 12px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+/* Glow effect */
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 12px rgba(255,255,255,0.3);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* WARNA */
+.angka {
+    background: #2e2e2e;
+    color: white;
+}
+
+.operator {
+    background: #5a5a5a;
+    color: white;
+}
+
+.hasil {
+    background: #aaaaaa;
+    color: black;
+    grid-column: span 2;
+}
+
+.hapus {
+    background: #cfcfcf;
+    color: black;
+}
+
+.del {
+    background: #888;
+    color: white;
+}
+
+.nol {
+    grid-column: span 2;
+}
+
+/* RIWAYAT */
+.riwayat-box {
+    background: #1a1a1a;
+    padding: 15px;
+    border-radius: 20px;
+    width: 230px;
+    box-shadow: 0 0 25px rgba(255,255,255,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.riwayat-box h3 {
+    color: white;
+}
+
+#history {
+    flex: 1;
+    overflow-y: auto;
+    color: #ccc;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.clear-btn {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.clear-btn:hover {
+    background: #666;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- KALKULATOR -->
+    <div class="kalkulator">
+        <input type="text" id="display" disabled>
+
+        <div class="grid">
+            <button class="hapus" onclick="hapus()">C</button>
+            <button class="del" onclick="hapusSatu()">DEL</button>
+            <button class="operator" onclick="tambah('/')">÷</button>
+            <button class="operator" onclick="tambah('*')">×</button>
+
+            <button class="angka" onclick="tambah('1')">1</button>
+            <button class="angka" onclick="tambah('2')">2</button>
+            <button class="angka" onclick="tambah('3')">3</button>
+            <button class="operator" onclick="tambah('-')">−</button>
+
+            <button class="angka" onclick="tambah('4')">4</button>
+            <button class="angka" onclick="tambah('5')">5</button>
+            <button class="angka" onclick="tambah('6')">6</button>
+            <button class="operator" onclick="tambah('+')">+</button>
+
+            <button class="angka" onclick="tambah('7')">7</button>
+            <button class="angka" onclick="tambah('8')">8</button>
+            <button class="angka" onclick="tambah('9')">9</button>
+
+            <button class="angka nol" onclick="tambah('0')">0</button>
+            <button class="hasil" onclick="hitung()">=</button>
+        </div>
+    </div>
+
+    <!-- RIWAYAT -->
+    <div class="riwayat-box">
+        <h3>Riwayat</h3>
+        <div id="history"></div>
+        <button class="clear-btn" onclick="hapusRiwayat()">Hapus Riwayat</button>
+    </div>
+
+</div>
+
+<script>
+let display = document.getElementById("display");
+let historyBox = document.getElementById("history");
+
+function tambah(val) {
+    display.value += val;
+}
+
+function hapus() {
+    display.value = "";
+}
+
+/* Hapus 1 karakter */
+function hapusSatu() {
+    display.value = display.value.slice(0, -1);
+}
+
+function hitung() {
+    try {
+        let ekspresi = display.value;
+        let hasil = eval(ekspresi);
+
+        // Jika hasil Infinity atau error matematika
+        if (!isFinite(hasil)) {
+            display.value = "wkwk";
+            return;
+        }
+
+        let item = document.createElement("div");
+        item.textContent = ekspresi + " = " + hasil;
+        historyBox.prepend(item);
+
+        display.value = hasil;
+    } catch {
+        display.value = "Hello World";
+    }
+}
+
+/* Konfirmasi hapus riwayat */
+function hapusRiwayat() {
+    let konfirmasi = confirm("Apakah anda yakin ingin menghapus semua riwayat?");
+    if (konfirmasi) {
+        historyBox.innerHTML = "";
+    }
+}
+
+/* Keyboard */
+document.addEventListener("keydown", function(e) {
+    let key = e.key;
+
+    if (!isNaN(key) || "+-*/.".includes(key)) {
+        tambah(key);
+    } else if (key === "Enter") {
+        hitung();
+    } else if (key === "Backspace") {
+        hapusSatu();
+    } else if (key === "Escape") {
+        hapus();
+    }
+});
+</script>
+
+</body>
+</html>
